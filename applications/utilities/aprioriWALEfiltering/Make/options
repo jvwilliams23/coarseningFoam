@@ -1,0 +1,14 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -g -O3 \
+    -I../../../libraries/constructFilter/lnInclude \
+    -I../../../libraries/convolution/lnInclude 
+
+EXE_LIBS = \
+    -L$(FOAM_USER_LIBBIN)\
+    -lfiniteVolume \
+    -lmeshTools \
+    -lfilterObjects \
+    -lconvolution 
+
