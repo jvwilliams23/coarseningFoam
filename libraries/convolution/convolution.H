@@ -28,6 +28,7 @@ SourceFiles
 #include "labelIOList.H"
 #include "volFields.H"
 
+#include <omp.h>
 #include "constructFilter.H"
 
 namespace Foam

@@ -272,19 +272,33 @@ Foam::volVectorField Foam::convolution::coarseningVec
         );
 	
 	//Info << " Dimensions coarsening Vec" << phi.dimensions() << endl;
+  bool debug_jw(true);
 		
 	if(!readFromFile_) 
 	{
+    // int omp_get_thread_num();
 		Info << tab << "Filtering " << name << " filter size = " << filterWidth << "X" << filterWidth << "X" << filterWidth << endl;
-		
+    # pragma omp parallel
+    {	
+      # pragma omp for
 		forAll(mesh.cells(),cellI)
 		{
+        // if (debug_jw)
+        // {
+        //   Info << "cell ID " << cellI << tab 
+        //       //  << "thread " << omp_get_thread_num() << tab 
+        //        << "velocity x " << fphi[cellI].x() << nl;
+        // }
 			scalar totalVol(0);
+
 			vector fVar(0,0,0);
+      
 			//const labelList fCell(filter_.stencils(filterWidth,cellI)); 
                         scalarField weights(filterWidth*filterWidth*filterWidth,1.);
                         const labelList fCell(filter_.stencils(filterWidth,cellI,weights));
 
+
+        // Could this be vectorised? Like a reduction, only for the values in the list
 			forAll(fCell,filterCellI)
 			{
 				label cID = fCell[filterCellI]; 
@@ -313,6 +327,7 @@ Foam::volVectorField Foam::convolution::coarseningVec
 			fphi[cellI].y() = fVar[1];
 			fphi[cellI].z() = fVar[2];
 		} 
+    }
 
 		Info << tab << "Writing " << name+charfPhi << endl;		
 		fphi.write();
