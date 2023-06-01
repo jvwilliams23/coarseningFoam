@@ -2,6 +2,7 @@ EXE_INC = \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -g -O3 \
+    -fopenmp \
     -I../../../libraries/constructFilter/lnInclude \
     -I../../../libraries/convolution/lnInclude 
 

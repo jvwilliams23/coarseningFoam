@@ -1,4 +1,0 @@
-calcCollisionalForce.C
-particleStressBi.C
-
-EXE = $(CFDEM_APP_DIR)/particleStressBi

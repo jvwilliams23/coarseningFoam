@@ -1,3 +1,0 @@
-calcCapillaryForce.C
-
-EXE = $(FOAM_USER_APPBIN)/calcCapillaryForce

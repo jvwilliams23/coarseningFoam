@@ -1,3 +1,0 @@
-calcWettedSolidArea.C
-
-EXE = $(FOAM_USER_APPBIN)/calcWettedSolidArea

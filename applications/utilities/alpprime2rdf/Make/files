@@ -1,3 +1,0 @@
-alpprime2rdf.C
-
-EXE = $(FOAM_USER_APPBIN)/alpprime2rdf

@@ -1,3 +1,0 @@
-mapParticleQuantities.C
-
-EXE = $(CFDEM_APP_DIR)/mapParticleQuantities 

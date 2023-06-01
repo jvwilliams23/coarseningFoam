@@ -1,3 +1,0 @@
-parcelStressModelling.C
-
-EXE = $(CFDEM_APP_DIR)/parcelStressModelling
