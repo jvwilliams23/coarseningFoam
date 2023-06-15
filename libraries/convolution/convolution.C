@@ -11,6 +11,8 @@ Description
 -----------------------------------------------------------------------------*/
 
 #include "convolution.H"
+#include <chrono>
+using namespace std::chrono;
 
 namespace Foam {
     defineTypeNameAndDebug(convolution,0);
@@ -273,64 +275,70 @@ Foam::volVectorField Foam::convolution::coarseningVec
 	
 	//Info << " Dimensions coarsening Vec" << phi.dimensions() << endl;
   bool debug_jw(true);
-		
+
 	if(!readFromFile_) 
 	{
     // int omp_get_thread_num();
+    
 		Info << tab << "Filtering " << name << " filter size = " << filterWidth << "X" << filterWidth << "X" << filterWidth << endl;
+    auto start = high_resolution_clock::now();
     # pragma omp parallel
     {	
       # pragma omp for
-		forAll(mesh.cells(),cellI)
-		{
+      forAll(mesh.cells(),cellI)
+      {
         // if (debug_jw)
         // {
         //   Info << "cell ID " << cellI << tab 
         //       //  << "thread " << omp_get_thread_num() << tab 
         //        << "velocity x " << fphi[cellI].x() << nl;
         // }
-			scalar totalVol(0);
+        scalar totalVol(0);
 
-			vector fVar(0,0,0);
+        vector fVar(0,0,0);
       
-			//const labelList fCell(filter_.stencils(filterWidth,cellI)); 
-                        scalarField weights(filterWidth*filterWidth*filterWidth,1.);
-                        const labelList fCell(filter_.stencils(filterWidth,cellI,weights));
+        //const labelList fCell(filter_.stencils(filterWidth,cellI)); 
+                      scalarField weights(filterWidth*filterWidth*filterWidth,1.);
+                      const labelList fCell(filter_.stencils(filterWidth,cellI,weights));
 
 
         // Could this be vectorised? Like a reduction, only for the values in the list
-			forAll(fCell,filterCellI)
-			{
-				label cID = fCell[filterCellI]; 
+        forAll(fCell,filterCellI)
+        {
+          label cID = fCell[filterCellI]; 
 
-                                scalar cWeight = weights[filterCellI];
+                                  scalar cWeight = weights[filterCellI];
 
-				totalVol +=   cWeight
-					    * mesh.V()[cID];
+          totalVol +=   cWeight
+                * mesh.V()[cID];
 
-				fVar +=   cWeight
-					* mesh.V()[cID]
-					*      phi[cID]; 
+          fVar +=   cWeight
+            * mesh.V()[cID]
+            *      phi[cID]; 
 
-			}
-			
-			if ( totalVol > 0 )
-			{
-				fVar /= totalVol;
-			}
-			else 
-			{
-				fVar = vector(0,0,0);
-			}
-			
-			fphi[cellI].x() = fVar[0];
-			fphi[cellI].y() = fVar[1];
-			fphi[cellI].z() = fVar[2];
-		} 
+        }
+        
+        if ( totalVol > 0 )
+        {
+          fVar /= totalVol;
+        }
+        else 
+        {
+          fVar = vector(0,0,0);
+        }
+        
+        fphi[cellI].x() = fVar[0];
+        fphi[cellI].y() = fVar[1];
+        fphi[cellI].z() = fVar[2];
+      }
     }
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    cout << "Convolution loop time " << duration.count() << " microseconds" << endl;
 
 		Info << tab << "Writing " << name+charfPhi << endl;		
 		fphi.write();
+    Info << tab << "Finished writing" << endl;
 		
 	}else
 	{
