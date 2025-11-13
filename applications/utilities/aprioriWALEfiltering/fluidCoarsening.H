@@ -1,6 +1,31 @@
 // Filtering gas velocity
 tildeUf = convKernel.coarseningVec("tildeUf",filterWidth[fWidth],U);
-tildeGradUf = fvc::grad(tildeUf);
+volTensorField tildeGradUf
+(
+	 IOobject
+	 (
+	  "gradTildeUf"+filterWidthName,
+	  runTime.timeName(),
+	  mesh,
+	  IOobject::NO_READ,
+	  IOobject::AUTO_WRITE
+	 ),
+	 fvc::grad(tildeUf)
+);
+tildeGradUf.write();
+volTensorField gradUfPrime
+(
+     IOobject
+     (
+      "gradUfPrime"+filterWidthName,
+      runTime.timeName(),
+      mesh,
+      IOobject::NO_READ,
+      IOobject::AUTO_WRITE
+     ),
+     fvc::grad(U) - tildeGradUf
+);
+gradUfPrime.write();
 
 if ( args.optionFound("channel") )
 {
@@ -35,21 +60,6 @@ if ( args.optionFound("channel") )
          fvc::laplacian(tildeUf)
     );
     lapTildeUf.write();
-
-    volTensorField gradTildeUf
-    (
-         IOobject
-         (
-          "gradTildeUf"+filterWidthName,
-          runTime.timeName(),
-          mesh,
-          IOobject::NO_READ,
-          IOobject::AUTO_WRITE
-         ),
-         fvc::grad(tildeUf)
-    );
-    gradTildeUf.write();
-
 
 }
 
