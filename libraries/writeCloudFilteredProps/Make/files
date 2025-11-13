@@ -1,0 +1,3 @@
+writeCloudFilteredProps.C
+
+LIB = $(FOAM_USER_LIBBIN)/liblagrangianFilteredFunctionObjects
