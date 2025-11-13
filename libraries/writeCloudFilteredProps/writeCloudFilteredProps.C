@@ -137,6 +137,7 @@ bool Foam::functionObjects::writeCloudFilteredProps::write()
             word epsilonName = "epsilon" + charfPhi;
             word tkeName = "k" + charfPhi;
             word UcName = "tildeUf" + charfPhi;
+			word gradUfTildeName = "gradTildeUf" + charfPhi;
 
             word epsilonNameOut = "epsilon";
             word tkeNameOut = "k";
@@ -148,6 +149,7 @@ bool Foam::functionObjects::writeCloudFilteredProps::write()
 
             const word scalWord = "scalar";
             const word vecWord = "vector";
+			const word tensWord = "tensor";
 
             Info << "Reading field for " << UcName << endl;
 
@@ -190,6 +192,10 @@ bool Foam::functionObjects::writeCloudFilteredProps::write()
                 Info << "Uc" << tab << UcName << tab << UcNameOut << endl;
                 IOFilteredProps<basicKinematicMPPICCloud> ioFPuc(cloud, UcName, UcNameOut, vecWord);
                 ioFPuc.write(cloud.nParcels() > 0);
+
+				Info << "gradUfTilde" << tab << gradUfTildeName << tab << gradUfTildeName << endl;
+                IOFilteredProps<basicKinematicMPPICCloud> ioFPgradU(cloud, gradUfTildeName, gradUfTildeName, tensWord);
+                ioFPgradU.write(cloud.nParcels() > 0);
 
                 /*
                 //If you want direct control over the output, here is an example to
